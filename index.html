@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>RoBot.5320 | Trợ lý ảo & ESP32</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="RoBot.5320 - Trợ lý ảo tiếng Việt, kho firmware ESP32, công cụ flash và kích hoạt thiết bị.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #020910;
+      --bg-panel: #0f2027;
+      --bg-card: #14252d;
+      --accent: #1de9b6;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --radius-xl: 26px;
+      --radius-card: 18px;
+      --shadow-panel: 0 28px 80px rgba(0,0,0,0.85);
+      --shadow-card: 0 18px 40px rgba(0,0,0,0.7);
+      --border-soft: rgba(148,163,253,0.12);
+      --transition: 0.22s ease;
+      --max-w: 1200px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(29,233,182,0.05), transparent 55%),
+        radial-gradient(circle at top right, rgba(56,189,248,0.06), transparent 60%),
+        var(--bg-main);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    .page-wrap {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 26px 18px 40px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 26px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #ffffff, var(--accent));
+      box-shadow: 0 0 22px rgba(29,233,182,0.9);
+      transition: var(--transition);
+    }
+
+    .brand-icon:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 30px rgba(29,233,182,1);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .brand-text:hover {
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .brand-name {
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .brand-sub {
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .pill {
+      padding: 5px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,253,0.26);
+      color: var(--accent);
+      font-size: 9px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(4,9,17,0.98);
+      box-shadow: 0 10px 26px rgba(0,0,0,0.9);
+    }
+
+    .pill span {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 12px rgba(29,233,182,1);
+    }
+
+    .panel {
+      margin: 0 auto;
+      padding: 26px;
+      background: radial-gradient(circle at top, rgba(255,255,255,0.02), transparent),
+                  var(--bg-panel);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-panel);
+      border: 1px solid var(--border-soft);
+    }
+
+    .panel-title { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+    .panel-sub { font-size: 11px; color: var(--muted); margin-bottom: 22px; max-width: 640px; }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-card);
+      padding: 16px;
+      box-shadow: var(--shadow-card);
+      border: 1px solid rgba(15,23,42,0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(148,163,253,0.4);
+      box-shadow: 0 26px 60px rgba(0,0,0,0.95);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-desc { font-size: 11px; color: var(--text); }
+    .card ul { list-style: disc; padding-left: 16px; font-size: 10px; color: var(--muted); }
+    .card-link { margin-top: 6px; font-size: 10px; color: var(--accent); display: inline-flex; align-items: center; gap: 5px; }
+
+    .footer { margin-top: 18px; font-size: 9px; color: var(--muted); text-align: center; }
+
+    @media (max-width: 960px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px) { .cards-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <header class="header">
+      <a href="https://www.tiktok.com/@robot.5320" target="_blank" class="brand">
+        <div class="brand-icon"></div>
+        <div class="brand-text">
+          <div class="brand-name">RoBot.5320</div>
+          <div class="brand-sub">Trợ lý ảo & ESP32 Ecosystem</div>
+        </div>
+      </a>
+      <div class="header-right">
+        <div class="pill"><span></span> Nạp firmware, kích hoạt thiết bị, dùng ngay</div>
+        <div>Hỗ trợ ESP32-S3 N16R8, PC Windows và nhiều cấu hình khác.</div>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel">
+        <h1 class="panel-title">Trung tâm RoBot.5320</h1>
+        <p class="panel-sub">Một trang duy nhất giúp bạn tải firmware ESP32, nạp thiết bị, kích hoạt mã bản quyền, sử dụng trợ lý ảo tiếng Việt và kết nối cộng đồng hỗ trợ kỹ thuật.</p>
+
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-title"><span class="icon">💻</span> Lily cho Windows</div>
+            <p class="card-desc">Trợ lý ảo tiếng Việt chạy trên máy tính, điều khiển bằng giọng nói.</p>
+            <ul>
+              <li>Điều khiển media, ứng dụng cơ bản</li>
+              <li>Đọc văn bản, hỗ trợ học tập</li>
+              <li>Tùy chỉnh tính cách theo nhu cầu</li>
+            </ul>
+          </div>
+
+          <a href="https://heylily.net/esp32/" target="_blank" class="card">
+            <div class="card-title"><span class="icon">📦</span> Kho Firmware ESP32</div>
+            <p class="card-desc">Tổng hợp firmware cho ESP32/ESP32-S3, tối ưu cho RoBot.5320.</p>
+            <ul>
+              <li>Firmware Xiaozhi-style, loa thông minh</li>
+              <li>Hỗ trợ nhiều board và module âm thanh</li>
+              <li>Cập nhật định kỳ, chọn và nạp nhanh</li>
+            </ul>
+            <div class="card-link">Truy cập kho firmware <span>↗</span></div>
+          </a>
+
+          <div class="card">
+            <div class="card-title"><span class="icon">⚡</span> ESP32 Flash Tool</div>
+            <p class="card-desc">Nạp firmware trực tiếp trên trình duyệt, không cần cài phức tạp.</p>
+            <ul>
+              <li>Chọn cổng, chọn file, bấm Flash</li>
+              <li>Hiển thị log, kiểm tra lỗi rõ ràng</li>
+              <li>Tương thích Chrome / Edge</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><span class="icon">🔑</span> Kích hoạt thiết bị</div>
+            <p class="card-desc">Quản lý mã active và thiết bị liên kết an toàn.</p>
+            <ul>
+              <li>Nhập mã kích hoạt nhanh chóng</li>
+              <li>Gắn thiết bị với tài khoản của bạn</li>
+              <li>Hủy, thay đổi thiết bị khi cần</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><span class="icon">🛒</span> Mua sản phẩm</div>
+            <p class="card-desc">Bộ kit RoBot.5320 sẵn firmware, cắm là chạy.</p>
+            <ul>
+              <li>ESP32-S3 + loa + micro + màn hình</li>
+              <li>Tối ưu cho trợ lý ảo tiếng Việt</li>
+              <li>Hỗ trợ bảo hành và cập nhật</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><span class="icon">👥</span> Nhóm cộng đồng</div>
+            <p class="card-desc">Nơi trao đổi kinh nghiệm và nhận hỗ trợ kỹ thuật.</p>
+            <ul>
+              <li>Chia sẻ sơ đồ nối dây, code mẫu</li>
+              <li>Cập nhật firmware mới và hướng dẫn</li>
+              <li>Cộng đồng thân thiện, dễ hỏi</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      © 2025 RoBot.5320 — Trang giới thiệu hệ sinh thái trợ lý ảo & ESP32.
+    </footer>
+  </div>
+</body>
+</html>
