@@ -4,273 +4,757 @@
   <meta charset="UTF-8">
   <title>RoBot.5320 | Trợ lý ảo & ESP32</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="RoBot.5320 - Trợ lý ảo tiếng Việt, kho firmware ESP32, công cụ flash và kích hoạt thiết bị.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="description" content="RoBot.5320 - Trợ lý ảo tiếng Việt, kho firmware ESP32, ESP32 Flash Tool, kích hoạt thiết bị và cộng đồng hỗ trợ.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script type="module" src="https://unpkg.com/esp-web-tools@latest/dist/web/install-button.js"></script>
+
   <style>
     :root {
-      --bg-main: #020910;
-      --bg-panel: #0f2027;
-      --bg-card: #14252d;
-      --accent: #1de9b6;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --radius-xl: 26px;
-      --radius-card: 18px;
-      --shadow-panel: 0 28px 80px rgba(0,0,0,0.85);
-      --shadow-card: 0 18px 40px rgba(0,0,0,0.7);
-      --border-soft: rgba(148,163,253,0.12);
-      --transition: 0.22s ease;
-      --max-w: 1200px;
+      --bg-main:#020910;
+      --bg-panel:#0f2027;
+      --bg-card:#14252d;
+      --accent:#1de9b6;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --radius-card:20px;
+      --transition:0.25s;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",sans-serif;}
+    body{
       background:
         radial-gradient(circle at top, rgba(29,233,182,0.05), transparent 55%),
         radial-gradient(circle at top right, rgba(56,189,248,0.06), transparent 60%),
         var(--bg-main);
-      color: var(--text);
-      min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
+      color:var(--text);
+      min-height:100vh;
+      -webkit-font-smoothing:antialiased;
+    }
+    a{text-decoration:none;color:inherit;}
+
+    /* 🔥 Thanh Chủ Web */
+    .owner {
+      text-align: center;
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 1.8;
+      padding: 18px 0;
+      color: #1de9b6;
+      letter-spacing: 1px;
+      background: linear-gradient(90deg, #071b23, #0f2027, #071b23);
+      border-bottom: 1px solid rgba(29, 233, 182, 0.6);
+      box-shadow:
+        0 0 10px rgba(29, 233, 182, 0.4),
+        0 0 20px rgba(29, 233, 182, 0.3),
+        inset 0 0 12px rgba(29, 233, 182, 0.25);
+      text-shadow:
+        0 0 5px #1de9b6,
+        0 0 10px #1de9b6,
+        0 0 20px #00ffc6,
+        0 0 40px #00ffc6;
+      animation: glowPulse 2s infinite alternate ease-in-out;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+    @keyframes glowPulse {
+      0% {
+        text-shadow:
+          0 0 6px #1de9b6,
+          0 0 14px #00ffc6,
+          0 0 24px #00ffc6,
+          0 0 40px #00ffc6;
+      }
+      100% {
+        text-shadow:
+          0 0 2px #1de9b6,
+          0 0 6px #00ffc6,
+          0 0 14px #00ffc6,
+          0 0 24px #00ffc6;
+      }
     }
 
-    a { text-decoration: none; color: inherit; }
-
-    .page-wrap {
-      max-width: var(--max-w);
-      margin: 0 auto;
-      padding: 26px 18px 40px;
+    /* Trang chính */
+    .page{
+      max-width:1200px;
+      margin:0 auto;
+      padding:32px 20px 50px;
     }
 
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 26px;
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      margin-bottom:26px;
+    }
+    .brand{display:flex;align-items:center;gap:10px;}
+    .dot{
+      width:30px;height:30px;border-radius:999px;
+      background:radial-gradient(circle at 30% 0,#ffffff,var(--accent));
+      box-shadow:0 0 25px rgba(29,233,182,0.9);
+    }
+    .title{font-weight:600;font-size:20px;}
+    .sub{font-size:11px;color:var(--muted);}
+    .pill{
+      padding:6px 13px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,253,0.26);
+      font-size:10px;
+      color:var(--accent);
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:rgba(4,9,17,0.98);
+      box-shadow:0 10px 26px rgba(0,0,0,0.9);
+    }
+    .pill span{
+      width:7px;height:7px;border-radius:999px;
+      background:var(--accent);
+      box-shadow:0 0 12px rgba(29,233,182,1);
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .panel{
+      background:var(--bg-panel);
+      padding:26px;
+      border-radius:25px;
+      box-shadow:0 24px 70px rgba(0,0,0,0.9);
+      border:1px solid rgba(148,163,253,0.16);
     }
 
-    .brand-icon {
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 0, #ffffff, var(--accent));
-      box-shadow: 0 0 22px rgba(29,233,182,0.9);
-      transition: var(--transition);
+    .panel h2{
+      font-size:24px;
+      margin-bottom:8px;
+      font-weight:600;
     }
 
-    .brand-icon:hover {
-      transform: scale(1.1);
-      box-shadow: 0 0 30px rgba(29,233,182,1);
+    .panel p.subtxt{
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:24px;
+      max-width:640px;
     }
 
-    .brand-text {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.1;
-      cursor: pointer;
-      transition: var(--transition);
+    .cards{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+      gap:20px;
     }
 
-    .brand-text:hover {
-      color: var(--accent);
-      transform: translateY(-1px);
+    .card{
+      background:linear-gradient(145deg,#14252d,#0c1a20);
+      padding:22px;
+      border-radius:var(--radius-card);
+      border:1px solid rgba(29,233,182,0.3);
+      box-shadow:0 0 20px rgba(0,0,0,0.8);
+      cursor:pointer;
+      transition:all var(--transition);
+    }
+    .card:hover{
+      transform:scale(1.04);
+      border-color:rgba(29,233,182,0.6);
+      box-shadow:0 0 25px rgba(29,233,182,0.3);
+    }
+    .card h3{
+      font-size:18px;
+      color:var(--accent);
+      margin-bottom:4px;
+    }
+    .card p{
+      font-size:13px;
+      color:var(--text);
     }
 
-    .brand-name {
-      font-weight: 600;
-      font-size: 18px;
+    footer{
+      text-align:center;
+      font-size:10px;
+      color:var(--muted);
+      margin-top:20px;
     }
 
-    .brand-sub {
-      font-size: 10px;
-      color: var(--muted);
+    /* Overlay chung */
+    .overlay{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at center,rgba(10,20,25,0.97),rgba(0,0,0,0.95));
+      backdrop-filter:blur(8px);
+      z-index:100;
+      overflow-y:auto;
+    }
+    .close-x{
+      position:fixed;
+      top:14px;
+      right:18px;
+      font-size:22px;
+      color:#9ca3af;
+      cursor:pointer;
+      z-index:110;
+    }
+    .close-x:hover{color:#ef4444;}
+
+    .home-link{
+      display:inline-block;
+      font-size:15px;
+      color:#1de9b6;
+      margin-bottom:14px;
+      background:rgba(29,233,182,0.1);
+      padding:6px 14px;
+      border-radius:8px;
+      border:1px solid rgba(29,233,182,0.3);
+      cursor:pointer;
+      transition:all 0.25s;
+    }
+    .home-link:hover{
+      background:rgba(29,233,182,0.3);
+      color:#fff;
     }
 
-    .header-right {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 4px;
-      font-size: 10px;
-      color: var(--muted);
+    /* Popup Đặt hàng */
+    .popup{
+      background:linear-gradient(180deg,#ffffff,#f8f9fa);
+      color:#111827;
+      border-radius:18px;
+      max-width:470px;
+      margin:100px auto 50px;
+      padding:28px;
+      box-shadow:0 0 30px rgba(29,233,182,0.4);
+      border:2px solid rgba(29,233,182,0.4);
+      font-size:15px;
+    }
+    .popup h3{
+      text-align:center;
+      font-size:22px;
+      color:#0d9488;
+      margin-bottom:5px;
+    }
+    .popup p{text-align:center;margin:2px 0;}
+    .popup input,
+    .popup select,
+    .popup textarea{
+      width:100%;
+      margin:6px 0;
+      padding:10px;
+      border-radius:10px;
+      border:1px solid #b0bfc7;
+      font-size:14px;
+    }
+    .popup textarea{min-height:70px;}
+    .popup .send-btn{
+      background:#0d9488;
+      font-weight:600;
+      color:#fff;
+      padding:10px 18px;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+    }
+    .popup .send-btn:hover{background:#08917a;}
+    .popup .cancel-btn{
+      background:#e5e7eb;
+      color:#111827;
+      padding:10px 18px;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+    }
+    .popup .cancel-btn:hover{background:#d1d5db;}
+
+    /* Kích hoạt */
+    .activate-box{
+      background:linear-gradient(145deg,#0f2027,#203a43);
+      color:#e5e7eb;
+      border-radius:20px;
+      max-width:470px;
+      margin:100px auto 50px;
+      padding:30px;
+      box-shadow:0 0 40px rgba(29,233,182,0.4);
+      border:2px solid rgba(29,233,182,0.5);
+      font-size:15px;
+    }
+    .activate-box h2{
+      font-size:22px;
+      color:var(--accent);
+      margin-bottom:6px;
+    }
+    .activate-box p{
+      font-size:13px;
+      color:#9ca3af;
+      margin-bottom:14px;
+    }
+    .activate-box label{
+      font-size:12px;
+      color:#9ca3af;
+      margin-bottom:3px;
+      display:block;
+    }
+    .activate-box input{
+      width:100%;
+      padding:10px;
+      margin-bottom:8px;
+      border-radius:10px;
+      border:1px solid rgba(148,163,253,0.4);
+      background:#020910;
+      color:#e5e7eb;
+      font-size:14px;
+    }
+    .activate-box button{
+      width:100%;
+      padding:10px;
+      border:none;
+      border-radius:10px;
+      background:#1de9b6;
+      color:#020910;
+      font-weight:600;
+      font-size:15px;
+      cursor:pointer;
+      margin-top:4px;
+      box-shadow:0 0 20px rgba(29,233,182,0.3);
+    }
+    .activate-box button:hover{
+      background:#13b38d;
+      box-shadow:0 0 25px rgba(29,233,182,0.6);
+    }
+    .activate-box .result{
+      margin-top:8px;
+      min-height:18px;
+      font-size:13px;
     }
 
-    .pill {
-      padding: 5px 11px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,253,0.26);
-      color: var(--accent);
-      font-size: 9px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(4,9,17,0.98);
-      box-shadow: 0 10px 26px rgba(0,0,0,0.9);
+    /* Flash Tool */
+    #esmart-flasher-wrap{
+      max-width:900px;
+      margin:60px auto 40px;
+    }
+    #esmart-flasher{
+      font-family:"Inter",sans-serif;
+      color:var(--text);
+    }
+    #esmart-flasher .container{
+      background:var(--bg-card);
+      border-radius:20px;
+      padding:30px;
+      border:2px solid rgba(29,233,182,0.4);
+      box-shadow:0 0 40px rgba(29,233,182,0.25);
+      text-align:center;
+    }
+    #esmart-flasher h1{
+      font-size:24px;
+      color:var(--accent);
+      margin-bottom:6px;
+      text-shadow:0 0 10px rgba(29,233,182,0.4);
+    }
+    #esmart-flasher p.subtitle{
+      font-size:14px;
+      color:var(--muted);
+      margin-bottom:16px;
+    }
+    #esmart-flasher .select-row{
+      display:flex;
+      gap:16px;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+    #esmart-flasher .select-group{
+      flex:1;
+      min-width:220px;
+      text-align:left;
+    }
+    #esmart-flasher .select-group label{
+      font-size:12px;
+      color:var(--accent);
+      margin-bottom:4px;
+      display:block;
+      font-weight:600;
+    }
+    #esmart-flasher select{
+      width:100%;
+      padding:9px 10px;
+      font-size:14px;
+      border-radius:10px;
+      border:1px solid rgba(148,163,253,0.3);
+      background:#0b1520;
+      color:var(--text);
+      outline:none;
+      transition:0.2s;
+    }
+    #esmart-flasher select:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 2px rgba(29,233,182,0.3);
+    }
+    #esmart-flasher #schematic{
+      margin-top:16px;
+      max-width:100%;
+      border-radius:14px;
+      border:1px solid rgba(148,163,253,0.25);
+      box-shadow:0 0 28px rgba(0,0,0,0.9);
+      display:none;
+      cursor:pointer;
+      transition:transform 0.2s;
+    }
+    #esmart-flasher #schematic:hover{transform:scale(1.03);}
+    #esmart-flasher esp-web-install-button{
+      margin-top:18px;
+      display:inline-block;
+      background:var(--accent);
+      color:#000;
+      font-weight:600;
+      border-radius:10px;
+      padding:8px 16px;
+      box-shadow:0 0 18px rgba(29,233,182,0.6);
+    }
+    #esmart-flasher #log{
+      width:100%;
+      height:160px;
+      margin-top:18px;
+      background:#020910;
+      border:1px solid rgba(148,163,253,0.25);
+      overflow-y:auto;
+      text-align:left;
+      padding:10px;
+      font-family:monospace;
+      font-size:12px;
+      border-radius:10px;
+      color:#1de9b6;
+      box-sizing:border-box;
+    }
+    #esmart-flasher footer{
+      margin-top:14px;
+      font-size:11px;
+      color:var(--muted);
     }
 
-    .pill span {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: var(--accent);
-      box-shadow: 0 0 12px rgba(29,233,182,1);
+    #imageModal{
+      display:none;
+      position:fixed;
+      z-index:9999;
+      top:0;left:0;width:100%;height:100%;
+      background-color:rgba(0,0,0,0.9);
+      justify-content:center;
+      align-items:center;
+    }
+    #imageModal img{
+      max-width:95%;
+      max-height:95%;
+      border-radius:14px;
+      box-shadow:0 0 40px rgba(29,233,182,0.4);
+      background:#000;
     }
 
-    .panel {
-      margin: 0 auto;
-      padding: 26px;
-      background: radial-gradient(circle at top, rgba(255,255,255,0.02), transparent),
-                  var(--bg-panel);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow-panel);
-      border: 1px solid var(--border-soft);
+    @media(max-width:640px){
+      header{flex-direction:column;align-items:flex-start;}
+      .panel{padding:20px;}
+      .card{padding:18px;}
+      .popup,.activate-box{margin-top:80px;}
     }
-
-    .panel-title { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
-    .panel-sub { font-size: 11px; color: var(--muted); margin-bottom: 22px; max-width: 640px; }
-
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-    }
-
-    .card {
-      background: var(--bg-card);
-      border-radius: var(--radius-card);
-      padding: 16px;
-      box-shadow: var(--shadow-card);
-      border: 1px solid rgba(15,23,42,0.9);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      transition: var(--transition);
-    }
-
-    .card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(148,163,253,0.4);
-      box-shadow: 0 26px 60px rgba(0,0,0,0.95);
-    }
-
-    .card-title {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--accent);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .card-desc { font-size: 11px; color: var(--text); }
-    .card ul { list-style: disc; padding-left: 16px; font-size: 10px; color: var(--muted); }
-    .card-link { margin-top: 6px; font-size: 10px; color: var(--accent); display: inline-flex; align-items: center; gap: 5px; }
-
-    .footer { margin-top: 18px; font-size: 9px; color: var(--muted); text-align: center; }
-
-    @media (max-width: 960px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 640px) { .cards-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
-  <div class="page-wrap">
-    <header class="header">
+  <!-- Thanh Chủ Web -->
+  <div class="owner">
+    🌐 <b>Chủ Web:</b> Nguyễn Trường Quốc 2k5 <br>
+    📞 <b>Số ĐT:</b> 0869635798
+  </div>
+
+  <!-- Trang chính -->
+  <div class="page">
+    <header>
       <a href="https://www.tiktok.com/@robot.5320" target="_blank" class="brand">
-        <div class="brand-icon"></div>
-        <div class="brand-text">
-          <div class="brand-name">RoBot.5320</div>
-          <div class="brand-sub">Trợ lý ảo & ESP32 Ecosystem</div>
+        <div class="dot"></div>
+        <div>
+          <div class="title">RoBot.5320</div>
+          <div class="sub">Trợ lý ảo & ESP32 Ecosystem</div>
         </div>
       </a>
-      <div class="header-right">
-        <div class="pill"><span></span> Nạp firmware, kích hoạt thiết bị, dùng ngay</div>
-        <div>Hỗ trợ ESP32-S3 N16R8, PC Windows và nhiều cấu hình khác.</div>
+      <div style="text-align:right;font-size:12px;color:var(--muted);">
+        <div class="pill"><span></span>Nạp firmware • Kích hoạt thiết bị • Đặt mua nhanh</div>
+        <div>ESP32-S3 • Xiaozhi AI • PC Windows</div>
       </div>
     </header>
 
-    <main>
-      <section class="panel">
-        <h1 class="panel-title">Trung tâm RoBot.5320</h1>
-        <p class="panel-sub">Một trang duy nhất giúp bạn tải firmware ESP32, nạp thiết bị, kích hoạt mã bản quyền, sử dụng trợ lý ảo tiếng Việt và kết nối cộng đồng hỗ trợ kỹ thuật.</p>
+    <section class="panel">
+      <h2>Trung tâm RoBot.5320</h2>
+      <p class="subtxt">
+        Điều hướng hệ sinh thái RoBot5320 - Xiaozhi AI: tải firmware, nạp trực tuyến, kích hoạt thiết bị,
+        đặt mua loa AI và truy cập các kênh nội dung chính thức.
+      </p>
 
-        <div class="cards-grid">
-          <div class="card">
-            <div class="card-title"><span class="icon">💻</span> Lily cho Windows</div>
-            <p class="card-desc">Trợ lý ảo tiếng Việt chạy trên máy tính, điều khiển bằng giọng nói.</p>
-            <ul>
-              <li>Điều khiển media, ứng dụng cơ bản</li>
-              <li>Đọc văn bản, hỗ trợ học tập</li>
-              <li>Tùy chỉnh tính cách theo nhu cầu</li>
-            </ul>
-          </div>
-
-          <a href="https://heylily.net/esp32/" target="_blank" class="card">
-            <div class="card-title"><span class="icon">📦</span> Kho Firmware ESP32</div>
-            <p class="card-desc">Tổng hợp firmware cho ESP32/ESP32-S3, tối ưu cho RoBot.5320.</p>
-            <ul>
-              <li>Firmware Xiaozhi-style, loa thông minh</li>
-              <li>Hỗ trợ nhiều board và module âm thanh</li>
-              <li>Cập nhật định kỳ, chọn và nạp nhanh</li>
-            </ul>
-            <div class="card-link">Truy cập kho firmware <span>↗</span></div>
-          </a>
-
-          <div class="card">
-            <div class="card-title"><span class="icon">⚡</span> ESP32 Flash Tool</div>
-            <p class="card-desc">Nạp firmware trực tiếp trên trình duyệt, không cần cài phức tạp.</p>
-            <ul>
-              <li>Chọn cổng, chọn file, bấm Flash</li>
-              <li>Hiển thị log, kiểm tra lỗi rõ ràng</li>
-              <li>Tương thích Chrome / Edge</li>
-            </ul>
-          </div>
-
-          <div class="card">
-            <div class="card-title"><span class="icon">🔑</span> Kích hoạt thiết bị</div>
-            <p class="card-desc">Quản lý mã active và thiết bị liên kết an toàn.</p>
-            <ul>
-              <li>Nhập mã kích hoạt nhanh chóng</li>
-              <li>Gắn thiết bị với tài khoản của bạn</li>
-              <li>Hủy, thay đổi thiết bị khi cần</li>
-            </ul>
-          </div>
-
-          <div class="card">
-            <div class="card-title"><span class="icon">🛒</span> Mua sản phẩm</div>
-            <p class="card-desc">Bộ kit RoBot.5320 sẵn firmware, cắm là chạy.</p>
-            <ul>
-              <li>ESP32-S3 + loa + micro + màn hình</li>
-              <li>Tối ưu cho trợ lý ảo tiếng Việt</li>
-              <li>Hỗ trợ bảo hành và cập nhật</li>
-            </ul>
-          </div>
-
-          <div class="card">
-            <div class="card-title"><span class="icon">👥</span> Nhóm cộng đồng</div>
-            <p class="card-desc">Nơi trao đổi kinh nghiệm và nhận hỗ trợ kỹ thuật.</p>
-            <ul>
-              <li>Chia sẻ sơ đồ nối dây, code mẫu</li>
-              <li>Cập nhật firmware mới và hướng dẫn</li>
-              <li>Cộng đồng thân thiện, dễ hỏi</li>
-            </ul>
-          </div>
+      <div class="cards">
+        <div class="card">
+          <h3>💻 Lily cho Windows</h3>
+          <p>Trợ lý ảo tiếng Việt cho PC: đọc văn bản, điều khiển, hỗ trợ học tập & làm việc.</p>
         </div>
-      </section>
-    </main>
 
-    <footer class="footer">
-      © 2025 RoBot.5320 — Trang giới thiệu hệ sinh thái trợ lý ảo & ESP32.
+        <div class="card">
+          <h3>📦 Kho Firmware ESP32</h3>
+          <p>Danh sách firmware ESP32/ESP32-S3 tối ưu cho RoBot5320 & Xiaozhi AI.</p>
+        </div>
+
+        <div class="card" onclick="openFlash()">
+          <h3>⚡ ESP32 Flash Tool</h3>
+          <p>Mở công cụ nạp firmware ESP32-S3 trực tuyến ngay trên trang này.</p>
+        </div>
+
+        <div class="card" onclick="openActivate()">
+          <h3>🔑 Kích hoạt thiết bị</h3>
+          <p>Nhập mã active để kích hoạt RoBot5320 - Xiaozhi AI và xác nhận thiết bị.</p>
+        </div>
+
+        <div class="card" onclick="openOrder()">
+          <h3>🛒 Mua sản phẩm</h3>
+          <p>Đặt mua RoBot5320 - Xiaozhi AI, hỗ trợ kỹ thuật, giao hàng toàn quốc.</p>
+        </div>
+
+        <a class="card" href="https://www.facebook.com/quoc.nguyentruong.96930?locale=vi_VN" target="_blank">
+          <h3>📘 Facebook</h3>
+          <p>Theo dõi cập nhật sản phẩm, livestream và hướng dẫn.</p>
+        </a>
+
+        <a class="card" href="https://www.tiktok.com/@robot.5320" target="_blank">
+          <h3>🎵 TikTok</h3>
+          <p>Video demo sản phẩm, thử nghiệm, mẹo dùng ESP32.</p>
+        </a>
+
+        <a class="card" href="https://www.youtube.com/@Robot.5320" target="_blank">
+          <h3>▶️ YouTube</h3>
+          <p>Video chi tiết lắp ráp, cấu hình, lập trình RoBot5320.</p>
+        </a>
+      </div>
+    </section>
+
+    <footer>
+      © 2025 RoBot.5320 — Hệ sinh thái trợ lý ảo & ESP32.
     </footer>
   </div>
+
+  <!-- Overlay Đặt hàng -->
+  <div id="orderOverlay" class="overlay">
+    <span class="close-x" onclick="closeOrder()">✖</span>
+    <form class="popup" action="https://formspree.io/f/mldarbrj" method="POST">
+      <div class="home-link" onclick="closeOrder()">⬅ Trang Chủ</div>
+      <h3>🛒 Đặt mua RoBot5320 - Xiaozhi AI</h3>
+      <p>💰 Giá gốc: <b style="text-decoration:line-through;color:gray;">770.000đ</b></p>
+      <p>🏷️ Giá mở bán: <b style="color:red;font-size:18px;">398.000đ</b></p>
+      <input type="text" name="Họ tên" placeholder="Họ tên" required>
+      <input type="tel" name="Số điện thoại" placeholder="Số điện thoại" required>
+      <input type="text" name="Địa chỉ" placeholder="Địa chỉ nhận hàng" required>
+      <label>Chọn phiên bản:</label>
+      <select name="Phiên bản" required>
+        <option>Phiên bản Tiêu chuẩn: 398k</option>
+        <option>Phiên bản VIP: 495k</option>
+        <option>Phiên bản ViPro: 530k</option>
+      </select>
+      <textarea name="Ghi chú" placeholder="Ghi chú thêm (màu sắc, thời gian nhận hàng...)"></textarea>
+      <div style="text-align:right;margin-top:10px;">
+        <button type="button" class="cancel-btn" onclick="closeOrder()">Hủy</button>
+        <button type="submit" class="send-btn">Gửi đơn hàng</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Overlay Kích hoạt -->
+  <div id="activateOverlay" class="overlay">
+    <span class="close-x" onclick="closeActivate()">✖</span>
+    <div class="activate-box">
+      <div class="home-link" onclick="closeActivate()">⬅ Trang Chủ</div>
+      <h2>🔑 Kích hoạt thiết bị RoBot.5320</h2>
+      <p>Nhập Mã thiết bị &amp; Mã kích hoạt được cung cấp kèm sản phẩm.</p>
+      <form id="activeForm">
+        <label>Mã thiết bị / Device ID</label>
+        <input id="deviceID" type="text" placeholder="VD: RB5320-ESP32S3-XXXX" required>
+        <label>Mã kích hoạt / Active Code</label>
+        <input id="activeCode" type="text" placeholder="Nhập mã kích hoạt" required>
+        <label>Email (tùy chọn)</label>
+        <input id="email" type="email" placeholder="Nhập email nếu muốn">
+        <button type="submit">Kích hoạt ngay</button>
+      </form>
+      <div id="result" class="result"></div>
+    </div>
+  </div>
+
+  <!-- Overlay ESP32 Flash Tool -->
+  <div id="flashOverlay" class="overlay">
+    <span class="close-x" onclick="closeFlash()">✖</span>
+    <div id="esmart-flasher-wrap">
+      <div id="esmart-flasher">
+        <div class="container">
+          <div class="home-link" onclick="closeFlash()">⬅ Trang Chủ</div>
+          <h1>⚡ ESP32 Flash Tool</h1>
+          <p class="subtitle">
+            Chọn đúng board &amp; firmware, kết nối ESP32-S3 bằng Chrome / Edge trên PC, sau đó nhấn "Connect" để nạp.
+          </p>
+
+          <div class="select-row">
+            <div class="select-group">
+              <label for="boardSelect">1️⃣ Chọn loại board:</label>
+              <select id="boardSelect">
+                <option value="esp32s3">ESP32-S3</option>
+                <option value="esp32s3ai">ESP32-S3(AI)</option>
+                <option value="esp32s3cam">ESP32-S3-CAM</option>
+              </select>
+            </div>
+            <div class="select-group">
+              <label for="firmwareSelect">2️⃣ Chọn firmware cần nạp:</label>
+              <select id="firmwareSelect"></select>
+            </div>
+          </div>
+
+          <img id="schematic" src="" alt="Sơ đồ đấu nối">
+          <esp-web-install-button id="flashButton"></esp-web-install-button>
+          <div id="log"></div>
+
+          <footer>
+            ⚙️ Hỗ trợ Chrome / Edge (PC). Khi nhấn “Connect”, chọn đúng cổng COM của ESP32-S3.
+          </footer>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal phóng to sơ đồ -->
+  <div id="imageModal">
+    <img id="modalImage" src="" alt="Phóng to sơ đồ">
+  </div>
+
+  <script>
+    // Hàm mở/đóng overlay
+    function openOrder(){document.getElementById('orderOverlay').style.display='block';}
+    function closeOrder(){document.getElementById('orderOverlay').style.display='none';}
+
+    function openActivate(){document.getElementById('activateOverlay').style.display='block';}
+    function closeActivate(){document.getElementById('activateOverlay').style.display='none';}
+
+    function openFlash(){document.getElementById('flashOverlay').style.display='block';}
+    function closeFlash(){document.getElementById('flashOverlay').style.display='none';}
+
+    // Form kích hoạt (demo hiển thị)
+    document.getElementById('activeForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const id = document.getElementById('deviceID').value.trim();
+      const code = document.getElementById('activeCode').value.trim();
+      const result = document.getElementById('result');
+      if(!id || !code){
+        result.innerHTML = "<span style='color:#f97316;'>⚠️ Vui lòng nhập đầy đủ Mã thiết bị và Mã kích hoạt.</span>";
+        return;
+      }
+      result.innerHTML = "✅ Đã nhận thông tin kích hoạt cho thiết bị <b>" + id + "</b>. (Demo hiển thị, cần server nếu muốn lưu thật)";
+    });
+
+    // ESP32 Flash Tool config
+    (function () {
+      const boardSelect = document.getElementById("boardSelect");
+      const firmwareSelect = document.getElementById("firmwareSelect");
+      const flashButton = document.getElementById("flashButton");
+      const logDiv = document.getElementById("log");
+      const schematic = document.getElementById("schematic");
+      const imageModal = document.getElementById("imageModal");
+      const modalImage = document.getElementById("modalImage");
+
+      const firmwareOptions = {
+        esp32s3: [
+          { name: "Oled 0.96inch 128x64px SSD1306", file: "esp32_s3_oled_0_96inch_128x64_ssd1306.bin", img: "https://dienthongminhesmart.com/chatbot-xiaozhi/images/esp32_s3_oled_0_96inch_128x64_ssd1306.png" },
+          { name: "TFT 1.54inch 240x240px ST7789", file: "esp32_s3_tft_1_54inch_240x240_st7789.bin", img: "https://dienthongminhesmart.com/chatbot-xiaozhi/images/esp32_s3_tft_1_54inch_240x240_st7789.png" },
+          { name: "TFT 1.54inch 240x240px ST7789 WeChat", file: "esp32_s3_tft_1_54inch_240x240_st7789_wechat.bin", img: "https://dienthongminhesmart.com/chatbot-xiaozhi/images/esp32_s3_tft_1_54inch_240x240_st7789.png" },
+          { name: "TFT 2.4inch 240x320px ST7789", file: "esp32_s3_tft_2_4inch_240x320_st7789.bin", img: "https://dienthongminhesmart.com/chatbot-xiaozhi/images/esp32_s3_tft_2_4inch_240x320_st7789.png" },
+          { name: "TFT 2.4inch 240x320px ST7789 WeChat", file: "esp32_s3_tft_2_4inch_240x320_st7789_wechat.bin", img: "https://dienthongminhesmart.com/chatbot-xiaozhi/images/esp32_s3_tft_2_4inch_240x320_st7789.png" },
+          { name: "TFT 2.8inch 240x320px ILI9341", file: "esp32_s3_tft_2_8inch_240x320_ili9341.bin", img: "https://dienthongminhesmart.com/chatbot-xiaozhi/images/esp32_s3_tft_2_8inch_240x320_ili9341.png" },
+          { name: "TFT 2.8inch 240x320px ILI9341 WeChat", file: "esp32_s3_tft_2_8inch_240x320_ili9341_wechat.bin", img: "https://dienthongminhesmart.com/chatbot-xiaozhi/images/esp32_s3_tft_2_8inch_240x320_ili9341.png" }
+        ],
+        esp32s3ai: [
+          { name: "Oled 0.96inch 128x64px SSD1306", file: "esp32_s3_ai_oled_0_96inch_128x64_ssd1306.bin", img: "https://dienthongminhesmart.com/chatbot-xiaozhi/images/esp32_s3_ai_oled_0_96inch_128x64_ssd1306.png" },
+          { name: "TFT 1.54inch 240x240px ST7789", file: "esp32_s3_ai_tft_1_54inch_240x240_st7789.bin", img: "https://dienthongminhesmart.com/chatbot-xiaozhi/images/esp32_s3_ai_tft_1_54inch_240x240_st7789.png" },
+          { name: "TFT 1.54inch 240x240px ST7789 Tivi mini", file: "esp32_s3_ai_tft_1_54inch_240x240_st7789_tivi_mini.bin", img: "https://dienthongminhesmart.com/chatbot-xiaozhi/images/esp32_s3_ai_tft_1_54inch_240x240_st7789_tivi_mini.png" }
+        ],
+        esp32s3cam: [
+          { name: "XH-S3E TFT 1.54inch 240x240px ST7789", file: "esp32_s3_cam_xh_s3e_tft_1_54inch_240x240_st7789.bin", img: "https://dienthongminhesmart.com/chatbot-xiaozhi/images/esp32_s3_cam_xh_s3e_tft_1_54inch_240x240_st7789.jpg" },
+          { name: "WROOM 1 TFT 1.54inch 240x240px ST7789", file: "esp32_s3_cam_wroom_tft_1_54inch_240x240_st7789.bin", img: "https://dienthongminhesmart.com/chatbot-xiaozhi/images/esp32_s3_cam_wroom_tft_1_54inch_240x240_st7789.jpg" }
+        ]
+      };
+
+      function log(msg){
+        const time = new Date().toLocaleTimeString();
+        logDiv.innerHTML += `[${time}] ${msg}<br>`;
+        logDiv.scrollTop = logDiv.scrollHeight;
+      }
+
+      function updateFirmwareList(){
+        const board = boardSelect.value;
+        firmwareSelect.innerHTML = "";
+        (firmwareOptions[board] || []).forEach(fw=>{
+          const opt = document.createElement("option");
+          opt.value = fw.file;
+          opt.textContent = fw.name;
+          opt.dataset.img = fw.img;
+          firmwareSelect.appendChild(opt);
+        });
+        updateManifest();
+        updateSchematic();
+      }
+
+      function updateSchematic(){
+        const selected = firmwareSelect.selectedOptions[0];
+        const imgSrc = selected ? selected.dataset.img : "";
+        if(imgSrc){
+          schematic.src = imgSrc;
+          schematic.style.display = "block";
+        }else{
+          schematic.style.display = "none";
+        }
+      }
+
+      function updateManifest(){
+        const board = boardSelect.value;
+        const firmwareFile = firmwareSelect.value;
+        if(!firmwareFile) return;
+
+        const firmwareURL = "https://dienthongminhesmart.com/chatbot-xiaozhi/firmwares/" + firmwareFile;
+
+        const manifest = {
+          name: "Firmware Xiaozhi",
+          builds: [
+            {
+              chipFamily: "ESP32-S3",
+              parts: [
+                { offset: 0x0, path: firmwareURL }
+              ]
+            }
+          ]
+        };
+
+        const blob = new Blob([JSON.stringify(manifest)], { type: "application/json" });
+        const manifestURL = URL.createObjectURL(blob);
+        flashButton.setAttribute("manifest", manifestURL);
+
+        log(`📦 Chọn board: ${board} | Firmware: ${firmwareFile}`);
+      }
+
+      firmwareSelect.addEventListener("change", () => {
+        updateManifest();
+        updateSchematic();
+      });
+
+      boardSelect.addEventListener("change", updateFirmwareList);
+
+      schematic.addEventListener("click", () => {
+        if(!schematic.src) return;
+        modalImage.src = schematic.src;
+        imageModal.style.display = "flex";
+      });
+
+      imageModal.addEventListener("click", () => {
+        imageModal.style.display = "none";
+      });
+
+      flashButton.addEventListener("web-install-connected", () => log("✅ Đã kết nối với thiết bị."));
+      flashButton.addEventListener("web-install-failed", () => log("❌ Có lỗi trong quá trình nạp."));
+      flashButton.addEventListener("web-install-log", (e) => {
+        if(e.detail && e.detail.message) log(e.detail.message);
+      });
+
+      // Khởi tạo
+      updateFirmwareList();
+    })();
+  </script>
 </body>
 </html>
