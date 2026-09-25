@@ -1,0 +1,25 @@
+{
+  "name": "robot5320",
+  "version": "1.0.0",
+  "description": "RoBot.5320 - Vietnamese Virtual Assistant & ESP32 Tools",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve .",
+    "start": "npx serve .",
+    "test": "echo \"No tests specified\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ngthtryequoctran123-arch/Robot5320.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ngthtryequoctran123-arch/Robot5320/issues"
+  },
+  "homepage": "https://github.com/ngthtryequoctran123-arch/Robot5320#readme",
+  "dependencies": {
+    "@vercel/speed-insights": "^2.0.0"
+  }
+}
